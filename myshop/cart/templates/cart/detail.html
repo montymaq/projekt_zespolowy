@@ -1,0 +1,57 @@
+{% extends "shop/base.html" %}
+{% load static %}
+{% block title %}
+Koszyk na zakupy
+{% endblock %}
+{% block content %}
+<h1>Koszyk na zakupy</h1>
+<table class="cart">
+<thead>
+<tr>
+<th>Obraz</th>
+<th>Produkt</th>
+<th>Ilość</th>
+<th>Usuń</th>
+<th>Cena jednostkowa</th>
+<th>Kwota</th>
+</tr>
+</thead>
+<tbody>
+{% for item in cart %}
+{% with product=item.product %}
+<tr>
+<td>
+<a href="{{ product.get_absolute_url }}">
+<img src="{% if product.image %}{{ product.image.url }}{% else %}
+{% static "img/no_image.png" %}{% endif %}">
+</a>
+</td>
+<td>{{ product.name }}</td>
+
+<td>
+<form action="{% url "cart:cart_add" product.id %}" method="post">
+{{ item.update_quantity_form.quantity }}
+{{ item.update_quantity_form.update }}
+<input type="submit" value="Zmień">
+{% csrf_token %}
+</form>
+</td>
+<td><a href="{% url "cart:cart_remove" product.id %}">Usuń</a></td>
+<td class="num">{{ item.price }} zł</td>
+<td class="num">{{ item.total_price }} zł</td>
+</tr>
+{% endwith %}
+{% endfor %}
+<tr class="total">
+<td>Wartość całkowita</td>
+<td colspan="4"></td>
+<td class="num">{{ cart.get_total_price }} zł</td>
+</tr>
+</tbody>
+</table>
+<p class="text-right">
+<a href="{% url "shop:product_list" %}" class="button
+light">Kontynuuj zakupy</a>
+<a href="#" class="button">Do kasy</a>
+</p>
+{% endblock %}
